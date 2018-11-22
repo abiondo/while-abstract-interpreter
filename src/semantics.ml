@@ -35,7 +35,7 @@ let rec eval_b_expr (b : L.b_expr) (s : state) : bool =
 	| Not  (b1)     -> not (eval_b_expr b1 s)
 	| And  (b1, b2) -> (eval_b_expr b1 s) && (eval_b_expr b2 s)
 	| Eq   (a1, a2) -> (eval_a_expr a1 s) == (eval_a_expr a2 s)
-	| Leq  (a1, a2) -> (eval_a_expr a1 s) <= (eval_a_expr a2 s)
+	| Le   (a1, a2) -> (eval_a_expr a1 s) <= (eval_a_expr a2 s)
 
 (* Composition of semantic functions *)
 let (++) (f : sem_func) (g : sem_func) (s : state) : state option =

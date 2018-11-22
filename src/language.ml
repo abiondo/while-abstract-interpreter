@@ -17,7 +17,7 @@ type b_expr =
 	| Not  of b_expr
 	| And  of b_expr * b_expr
 	| Eq   of a_expr * a_expr
-	| Leq  of a_expr * a_expr
+	| Le   of a_expr * a_expr
 
 (* A statement *)
 type stm =

@@ -7,7 +7,7 @@
 
 .PHONY: all clean byte native profile debug test
 
-OCB_FLAGS = -tag bin_annot -I src
+OCB_FLAGS = -tag bin_annot -use-menhir -I src
 OCB = ocamlbuild $(OCB_FLAGS)
 
 all: native
