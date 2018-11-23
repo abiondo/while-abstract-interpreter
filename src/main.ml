@@ -32,12 +32,28 @@ let get_state s =
 	| None      -> failwith "Undefined state"
 	| Some (ss) -> ss
 
+(* Prints a state to the standard output *)
+let dump_state s =
+	S.State.iter (fun k v -> Printf.printf "%6s -> %d\n" k v) s
+
 
 let program = parse stdin
-
 let args = Array.sub Sys.argv 1 (Array.length Sys.argv - 1)
-let s0 = initial_state @@ Array.to_list @@ Array.map int_of_string args
+let si = initial_state @@ Array.to_list @@ Array.map int_of_string args
 
-let sf = get_state @@ S.semantic program s0
+let () =
+	Printf.printf("---------------------\n");
+	Printf.printf("    INITIAL STATE    \n");
+	Printf.printf("---------------------\n");
+	dump_state si;
+	Printf.printf("---------------------\n\n");
 
-let () = Printf.printf "y = %d\n" (S.State.eval_var "y" sf)
+	Printf.printf("Running...\n\n");
+
+	let sf = get_state @@ S.semantic program si in
+
+	Printf.printf("---------------------\n");
+	Printf.printf("     FINAL STATE     \n");
+	Printf.printf("---------------------\n");
+	dump_state sf;
+	Printf.printf("---------------------\n\n");
