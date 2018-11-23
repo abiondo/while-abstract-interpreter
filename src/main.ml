@@ -49,6 +49,7 @@ let () =
 	Printf.printf("---------------------\n\n");
 
 	Printf.printf("Running...\n\n");
+	flush stdout;
 
 	let sf = get_state @@ S.semantic program si in
 
@@ -56,4 +57,5 @@ let () =
 	Printf.printf("     FINAL STATE     \n");
 	Printf.printf("---------------------\n");
 	dump_state sf;
-	Printf.printf("---------------------\n\n");
+	Printf.printf("---------------------\n");
+	flush stdout;
