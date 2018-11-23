@@ -1,7 +1,9 @@
+module L = Language
 module S = Semantics
 
-let program =
-	let lexbuf = Lexing.from_channel stdin in
+(* Parses a program *)
+let parse (c : in_channel) : L.stm =
+	let lexbuf = Lexing.from_channel c in
 	try
 		Parser.program Lexer.token lexbuf
 	with exn ->
@@ -16,12 +18,26 @@ let program =
 			exit 1
 		end
 
-let x = int_of_string Sys.argv.(1)
+(* Builds the initial state given a list of arguments *)
+let rec initial_state (a : L.value list) : S.state =
+	let rec build n l =
+		match l with
+		| [] -> S.State.empty
+		| x :: xs -> S.State.add ("$" ^ (string_of_int n)) x (build (n+1) xs)
+	in build 0 a
 
-let s = S.semantic program (S.State.add "x" x S.State.empty)
+(* Unwraps a state, failing if it is undefined *)
+let get_state s =
+	match s with
+	| None      -> failwith "Undefined state"
+	| Some (ss) -> ss
 
-let get x = match x with
-| None -> failwith "Undefined state"
-| Some(v) -> v
 
-let () = Printf.printf "y = %d\n" (S.State.eval_var "y" (get s))
+let program = parse stdin
+
+let args = Array.sub Sys.argv 1 (Array.length Sys.argv - 1)
+let s0 = initial_state @@ Array.to_list @@ Array.map int_of_string args
+
+let sf = get_state @@ S.semantic program s0
+
+let () = Printf.printf "y = %d\n" (S.State.eval_var "y" sf)
