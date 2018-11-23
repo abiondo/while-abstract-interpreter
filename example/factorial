@@ -1,6 +1,6 @@
-x := $0;
-y := 1;
-while !(x = 0) do (
-	y := y * x;
-	x := x - 1;
+n := $0;
+result := 1;
+while !(n <= 0) do (
+	result := result * n;
+	n := n - 1;
 )
