@@ -45,10 +45,10 @@ rule token = parse
   | "and"        { AND }
   | "or"         { OR }
   | ":="         { ASSIGN }
-  | "=="         { EQ }
-  | "!="         { NE }
+  | "<>"         { NE }
   | "<="         { LE }
   | ">="         { GE }
+  | "="          { EQ }
   | '<'          { LT }
   | '>'          { GT }
   | '+'          { PLUS }
