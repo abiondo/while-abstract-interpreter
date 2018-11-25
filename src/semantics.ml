@@ -19,6 +19,9 @@ type state = L.value State.t
 (* Type for semantic functions *)
 type sem_func = state -> state option
 
+(* Identity semantic function *)
+let id (s : state) : state option = Some s
+
 (* Evaluates an arithmetic expression *)
 let rec eval_a_expr (a : L.a_expr) (s : state) : L.value =
 	match a with
@@ -54,18 +57,18 @@ let cond (b : state -> bool) (sm1 : sem_func) (sm2 : sem_func) (s : state) : sta
 
 (* Auxiliary function whose fixpoint is the while semantic function *)
 let while_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
-	cond b (fun x -> g ++ sm @@ x) (fun x -> Some(x))
+	cond b (fun x -> g ++ sm @@ x) id
 
-(* While semantic function *)
-let while_sem (b : L.b_expr) (sm : sem_func) (s : state) : state option =
-	Ccpo.fix (while_aux (eval_b_expr b) sm) s
+(* Auxiliary function whose fixpoint is the repeat-until semantic function *)
+let repeat_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
+	(cond b id g) ++ sm
 
 (* Semantic function for a statement *)
 let rec semantic (st : L.stm) (s : state) : state option =
 	match st with
-	| Skip                 -> Some(s)
-	| Assign (x, a)        -> Some(State.add x (eval_a_expr a s) s)
+	| Skip                 -> Some s
+	| Assign (x, a)        -> Some (State.add x (eval_a_expr a s) s)
 	| Comp   (st1, st2)    -> (semantic st2) ++ (semantic st1) @@ s
 	| If     (b, st1, st2) -> cond (eval_b_expr b) (semantic st1) (semantic st2) s
-	| While  (b, st1)      -> while_sem b (semantic st1) s
-	| Repeat (b, st1)      -> (while_sem (L.Not b) (semantic st1)) ++ (semantic st1) @@ s
+	| While  (b, st1)      -> Ccpo.fix (while_aux (eval_b_expr b) (semantic st1)) s
+	| Repeat (b, st1)      -> Ccpo.fix (repeat_aux (eval_b_expr b) (semantic st1)) s
