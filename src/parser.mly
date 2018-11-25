@@ -5,12 +5,13 @@
 %token ASSIGN IF THEN ELSE WHILE DO
 %token LPAREN RPAREN
 %token SEMI
-%token NOT AND EQ LE
+%token NOT AND OR EQ NE LE GE LT GT
 %token PLUS MINUS TIMES
 %token EOF
 
 %left AND
-%left EQ LE
+%left OR
+%left EQ NE LE GE LT GT
 %left PLUS MINUS
 %left TIMES
 
@@ -35,8 +36,13 @@ b_expr:
   | FALSE                { Language.Bool(false) }
   | NOT b_expr           { Language.Not($2) }
   | b_expr AND b_expr    { Language.And($1, $3) }
+  | b_expr OR b_expr     { Language.Or($1, $3) }
   | a_expr EQ a_expr     { Language.Eq($1, $3) }
+  | a_expr NE a_expr     { Language.Ne($1, $3) }
   | a_expr LE a_expr     { Language.Le($1, $3) }
+  | a_expr GE a_expr     { Language.Ge($1, $3) }
+  | a_expr LT a_expr     { Language.Lt($1, $3) }
+  | a_expr GT a_expr     { Language.Gt($1, $3) }
   | LPAREN b_expr RPAREN { $2 }
   ;
 

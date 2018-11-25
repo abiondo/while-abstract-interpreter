@@ -36,23 +36,28 @@ rule token = parse
   | newline      { next_line lexbuf; token lexbuf }
   | "true"       { TRUE }
   | "false"      { FALSE }
-  | ":="         { ASSIGN }
   | "if"         { IF }
   | "then"       { THEN }
   | "else"       { ELSE }
   | "while"      { WHILE }
   | "do"         { DO }
-  | num   as lxm { NUM(int_of_string lxm) }
-  | ident as lxm { IDENT(lxm) }
-  | '('          { LPAREN }
-  | ')'          { RPAREN }
-  | ';'          { SEMI }
-  | '!'          { NOT }
-  | '&'          { AND }
-  | '='          { EQ }
+  | "not"        { NOT }
+  | "and"        { AND }
+  | "or"         { OR }
+  | ":="         { ASSIGN }
+  | "=="         { EQ }
+  | "!="         { NE }
   | "<="         { LE }
+  | ">="         { GE }
+  | '<'          { LT }
+  | '>'          { GT }
   | '+'          { PLUS }
   | '-'          { MINUS }
   | '*'          { TIMES }
+  | '('          { LPAREN }
+  | ')'          { RPAREN }
+  | ';'          { SEMI }
+  | num   as lxm { NUM(int_of_string lxm) }
+  | ident as lxm { IDENT(lxm) }
   | eof          { EOF }
   | _            { raise @@ SyntaxError ("Unexpected character: " ^ (lexeme lexbuf))}

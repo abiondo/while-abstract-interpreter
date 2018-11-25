@@ -16,8 +16,13 @@ type b_expr =
 	| Bool of bool
 	| Not  of b_expr
 	| And  of b_expr * b_expr
+	| Or   of b_expr * b_expr
 	| Eq   of a_expr * a_expr
+	| Ne   of a_expr * a_expr
 	| Le   of a_expr * a_expr
+	| Ge   of a_expr * a_expr
+	| Lt   of a_expr * a_expr
+	| Gt   of a_expr * a_expr
 
 (* A statement *)
 type stm =

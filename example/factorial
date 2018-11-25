@@ -1,6 +1,6 @@
 n := $0;
 result := 1;
-while !(n <= 0) do (
+while n > 0 or n == 123 do (
 	result := result * n;
 	n := n - 1;
 )
