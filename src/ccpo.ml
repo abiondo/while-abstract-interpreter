@@ -1,10 +1,10 @@
 (*
 A chain-complete partial order (D, <=):
-  - D = set of (partial) functions X->X
-  - f1 <= f2 iff f1(x) = y => f2(x) = y for all x, y in X
+  - D = set of (partial) functions X->Y
+  - f1 <= f2 iff f1(x) = y => f2(x) = y for all x in X, y in Y
 *)
 
-type 'a element = 'a -> 'a option
+type ('a, 'b) element = 'a -> 'b option
 
 type 'a stream = Cons of 'a * (unit -> 'a stream)
 
@@ -12,7 +12,7 @@ type 'a stream = Cons of 'a * (unit -> 'a stream)
 let bottom x = None
 
 (* Least upper bound of a D stream *)
-let rec lub (fs : 'a element stream) (x : 'a) : 'a =
+let rec lub (fs : ('a, 'b) element stream) (x : 'a) : 'b =
 	match fs with
 	| Cons (f, fst) ->
 		match f x with
@@ -24,5 +24,5 @@ let rec func_powers f x =
 	Cons (x, fun () -> func_powers f (f x))
 
 (* Kleene-Knaster-Tarski fixed point for a continuous D->D function *)
-let fix (f : 'a element -> 'a element) (x : 'a) : 'a =
+let fix (f : ('a, 'b) element -> ('a, 'b) element) (x : 'a) : 'b =
 	lub (func_powers f bottom) x
