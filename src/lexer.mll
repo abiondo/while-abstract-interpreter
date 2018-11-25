@@ -41,6 +41,8 @@ rule token = parse
   | "else"       { ELSE }
   | "while"      { WHILE }
   | "do"         { DO }
+  | "repeat"     { REPEAT }
+  | "until"      { UNTIL }
   | "not"        { NOT }
   | "and"        { AND }
   | "or"         { OR }

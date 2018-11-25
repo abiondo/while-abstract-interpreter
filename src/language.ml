@@ -31,3 +31,4 @@ type stm =
 	| Comp   of stm * stm
 	| If     of b_expr * stm * stm
 	| While  of b_expr * stm
+	| Repeat of b_expr * stm

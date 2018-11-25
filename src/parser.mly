@@ -2,7 +2,7 @@
 %token <string> IDENT
 
 %token TRUE FALSE
-%token ASSIGN IF THEN ELSE WHILE DO
+%token ASSIGN IF THEN ELSE WHILE DO REPEAT UNTIL
 %token LPAREN RPAREN
 %token SEMI
 %token NOT AND OR EQ NE LE GE LT GT
@@ -47,11 +47,12 @@ b_expr:
   ;
 
 stm:
-    SEMI                        { Language.Skip }
-  | IDENT ASSIGN a_expr SEMI    { Language.Assign($1, $3) }
-  | IF b_expr THEN stm ELSE stm { Language.If($2, $4, $6) }
-  | WHILE b_expr DO stm         { Language.While($2, $4) }
-  | LPAREN stm_list RPAREN      { $2 }
+    SEMI                         { Language.Skip }
+  | IDENT ASSIGN a_expr SEMI     { Language.Assign($1, $3) }
+  | IF b_expr THEN stm ELSE stm  { Language.If($2, $4, $6) }
+  | WHILE b_expr DO stm          { Language.While($2, $4) }
+  | REPEAT stm UNTIL b_expr SEMI { Language.Repeat($4, $2) }
+  | LPAREN stm_list RPAREN       { $2 }
   ;
 
 stm_list:
