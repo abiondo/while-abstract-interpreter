@@ -58,4 +58,4 @@ let rec semantic (st : L.stm) (s : state) : state option =
 	| Assign (x, a)        -> Some(State.add x (eval_a_expr a s) s)
 	| Comp   (st1, st2)    -> (semantic st2) ++ (semantic st1) @@ s
 	| If     (b, st1, st2) -> cond (eval_b_expr b) (semantic st1) (semantic st2) s
-	| While  (b, st1)      -> Some(Ccpo.fix (while_aux (eval_b_expr b) (semantic st1)) s)
+	| While  (b, st1)      -> Ccpo.fix (while_aux (eval_b_expr b) (semantic st1)) s
