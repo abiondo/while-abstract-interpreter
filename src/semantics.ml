@@ -57,7 +57,7 @@ let cond (b : state -> bool) (sm1 : sem_func) (sm2 : sem_func) (s : state) : sta
 
 (* Auxiliary function whose fixpoint is the while semantic function *)
 let while_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
-	cond b (fun x -> g %. sm @@ x) id
+	cond b (g %. sm) id
 
 (* Auxiliary function whose fixpoint is the repeat-until semantic function *)
 let repeat_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
