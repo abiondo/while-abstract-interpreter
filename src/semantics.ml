@@ -46,7 +46,7 @@ let rec eval_b_expr (b : L.b_expr) (s : state) : bool =
 	| Gt   (a1, a2) -> (eval_a_expr a1 s) > (eval_a_expr a2 s)
 
 (* Composition of semantic functions *)
-let (++) (f : sem_func) (g : sem_func) (s : state) : state option =
+let (%.) (f : sem_func) (g : sem_func) (s : state) : state option =
 	match g s with
 	| None      -> None
 	| Some (ss) -> f ss
@@ -57,18 +57,18 @@ let cond (b : state -> bool) (sm1 : sem_func) (sm2 : sem_func) (s : state) : sta
 
 (* Auxiliary function whose fixpoint is the while semantic function *)
 let while_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
-	cond b (fun x -> g ++ sm @@ x) id
+	cond b (fun x -> g %. sm @@ x) id
 
 (* Auxiliary function whose fixpoint is the repeat-until semantic function *)
 let repeat_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
-	(cond b id g) ++ sm
+	cond b id g %. sm
 
 (* Semantic function for a statement *)
 let rec semantic (st : L.stm) (s : state) : state option =
 	match st with
 	| Skip                 -> Some s
 	| Assign (x, a)        -> Some (State.add x (eval_a_expr a s) s)
-	| Comp   (st1, st2)    -> (semantic st2) ++ (semantic st1) @@ s
+	| Comp   (st1, st2)    -> semantic st2 %. semantic st1 @@ s
 	| If     (b, st1, st2) -> cond (eval_b_expr b) (semantic st1) (semantic st2) s
 	| While  (b, st1)      -> Ccpo.fix (while_aux (eval_b_expr b) (semantic st1)) s
 	| Repeat (b, st1)      -> Ccpo.fix (repeat_aux (eval_b_expr b) (semantic st1)) s
