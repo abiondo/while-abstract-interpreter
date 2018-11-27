@@ -66,9 +66,13 @@ let repeat_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
 (* Semantic function for a statement *)
 let rec semantic (st : L.stm) (s : state) : state option =
 	match st with
-	| Skip                 -> Some s
-	| Assign (x, a)        -> Some (State.add x (eval_a_expr a s) s)
-	| Comp   (st1, st2)    -> semantic st2 %. semantic st1 @@ s
-	| If     (b, st1, st2) -> cond (eval_b_expr b) (semantic st1) (semantic st2) s
-	| While  (b, st1)      -> Ccpo.fix (while_aux (eval_b_expr b) (semantic st1)) s
-	| Repeat (b, st1)      -> Ccpo.fix (repeat_aux (eval_b_expr b) (semantic st1)) s
+	| Skip                    -> Some s
+	| Assign (x, a)           -> Some (State.add x (eval_a_expr a s) s)
+	| Comp   (st1, st2)       -> semantic st2 %. semantic st1 @@ s
+	| If     (b, st1, st2)    -> cond (eval_b_expr b) (semantic st1) (semantic st2) s
+	| While  (b, st1)         -> Ccpo.fix (while_aux (eval_b_expr b) (semantic st1)) s
+	| Repeat (b, st1)         -> Ccpo.fix (repeat_aux (eval_b_expr b) (semantic st1)) s
+	| For    (x, a1, a2, st1) -> let b = eval_b_expr @@ L.Le(L.Var(x), a2) in
+	                             let init = semantic @@ L.Assign(x, a1) in
+	                             let inc = semantic @@ L.Assign(x, L.Sum(L.Var(x), L.Num(1))) in
+	                             Ccpo.fix (while_aux b (inc %. semantic st1)) %. init @@ s

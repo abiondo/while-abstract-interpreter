@@ -32,3 +32,4 @@ type stm =
 	| If     of b_expr * stm * stm
 	| While  of b_expr * stm
 	| Repeat of b_expr * stm
+	| For    of var * a_expr * a_expr * stm

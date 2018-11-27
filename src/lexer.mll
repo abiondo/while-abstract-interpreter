@@ -43,6 +43,8 @@ rule token = parse
   | "do"         { DO }
   | "repeat"     { REPEAT }
   | "until"      { UNTIL }
+  | "for"        { FOR }
+  | "to"         { TO }
   | "not"        { NOT }
   | "and"        { AND }
   | "or"         { OR }
