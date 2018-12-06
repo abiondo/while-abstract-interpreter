@@ -26,12 +26,6 @@ let rec initial_state (a : L.value list) : S.state =
 		| x :: xs -> S.State.add ("$" ^ (string_of_int n)) x (build (n+1) xs)
 	in build 0 a
 
-(* Unwraps a state, failing if it is undefined *)
-let get_state s =
-	match s with
-	| None      -> failwith "Undefined state"
-	| Some (ss) -> ss
-
 (* Prints a state to the standard output *)
 let dump_state s =
 	S.State.iter (fun k v -> Printf.printf "%6s -> %d\n" k v) s
@@ -51,7 +45,7 @@ let () =
 	Printf.printf("Running...\n\n");
 	flush stdout;
 
-	let sf = get_state @@ S.semantic program si in
+	let sf = S.semantic program si in
 
 	Printf.printf("---------------------\n");
 	Printf.printf("     FINAL STATE     \n");

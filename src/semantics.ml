@@ -16,11 +16,13 @@ end
 (* Type for the program state *)
 type state = L.value State.t
 
-(* Type for semantic functions *)
-type sem_func = state -> state option
+(* Type for total semantic functions *)
+type sem_func = state -> state
+(* Type for partial semantic functions *)
+type sem_func_partial = state -> state option
 
-(* Identity semantic function *)
-let id (s : state) : state option = Some s
+(* Identity partial semantic function *)
+let id (s : state) : state option = Some (s)
 
 (* Evaluates an arithmetic expression *)
 let rec eval_a_expr (a : L.a_expr) (s : state) : L.value =
@@ -45,34 +47,38 @@ let rec eval_b_expr (b : L.b_expr) (s : state) : bool =
 	| Lt   (a1, a2) -> (eval_a_expr a1 s) < (eval_a_expr a2 s)
 	| Gt   (a1, a2) -> (eval_a_expr a1 s) > (eval_a_expr a2 s)
 
-(* Composition of semantic functions *)
-let (%.) (f : sem_func) (g : sem_func) (s : state) : state option =
+(* Composition of partial semantic functions *)
+let (%.) (f : sem_func_partial) (g : sem_func_partial) (s : state) : state option =
 	match g s with
 	| None      -> None
 	| Some (ss) -> f ss
 
-(* Conditional semantic function *)
-let cond (b : state -> bool) (sm1 : sem_func) (sm2 : sem_func) (s : state) : state option =
-	(if b s then sm1 else sm2) s
+(* Polymorphic conditional function *)
+let cond (b : 'a -> bool) (f1 : 'a -> 'b) (f2 : 'a -> 'b) (x : 'a) : 'b =
+	(if b x then f1 else f2) x
+
+(* Turns a total function into an always-defined partial function *)
+let partial (f : 'a -> 'b) (x : 'a): 'b option = Some (f x)
 
 (* Auxiliary function whose fixpoint is the while semantic function *)
-let while_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
-	cond b (g %. sm) id
+let while_aux (b : state -> bool) (sm : sem_func) (g : sem_func_partial) : sem_func_partial =
+	cond b (g %. partial sm) id
 
 (* Auxiliary function whose fixpoint is the repeat-until semantic function *)
-let repeat_aux (b : state -> bool) (sm : sem_func) (g : sem_func) : sem_func =
-	cond b id g %. sm
+let repeat_aux (b : state -> bool) (sm : sem_func) (g : sem_func_partial) : sem_func_partial =
+	cond b id g %. partial sm
 
 (* Semantic function for a statement *)
-let rec semantic (st : L.stm) (s : state) : state option =
+let rec semantic (st : L.stm) (s : state) : state =
 	match st with
-	| Skip                    -> Some s
-	| Assign (x, a)           -> Some (State.add x (eval_a_expr a s) s)
-	| Comp   (st1, st2)       -> semantic st2 %. semantic st1 @@ s
+	| Skip                    -> s
+	| Assign (x, a)           -> State.add x (eval_a_expr a s) s
+	| Comp   (st1, st2)       -> semantic st2 @@ semantic st1 s
 	| If     (b, st1, st2)    -> cond (eval_b_expr b) (semantic st1) (semantic st2) s
 	| While  (b, st1)         -> Ccpo.fix (while_aux (eval_b_expr b) (semantic st1)) s
 	| Repeat (b, st1)         -> Ccpo.fix (repeat_aux (eval_b_expr b) (semantic st1)) s
 	| For    (x, a1, a2, st1) -> let b = eval_b_expr @@ L.Le(L.Var(x), a2) in
 	                             let init = semantic @@ L.Assign(x, a1) in
 	                             let inc = semantic @@ L.Assign(x, L.Sum(L.Var(x), L.Num(1))) in
-	                             Ccpo.fix (while_aux b (inc %. semantic st1)) %. init @@ s
+	                             let body s0 = inc (semantic st1 s0) in
+	                             Ccpo.fix (while_aux b body) @@ init @@ s
