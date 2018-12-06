@@ -10,7 +10,7 @@ module State = struct
 
 	let eval_var (x : L.var) (s : L.value t) : L.value =
 		match find_opt x s with
-		| None     -> failwith ("Unbound variable " ^ x)
+		| None     -> random_z ()
 		| Some (v) -> v
 end
 

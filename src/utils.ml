@@ -13,3 +13,9 @@ let (%.) (f : 'a -> 'b option) (g : 'a -> 'b option) (x : 'a) : 'b option =
 	match g x with
 	| None     -> None
 	| Some (y) -> f y
+
+(* Generates a random Z.t *)
+let random_z () : Z.t =
+	Z.of_int64 @@ Int64.sub
+		(Random.int64 Int64.max_int)
+		(Int64.div Int64.max_int @@ Int64.of_int 2)

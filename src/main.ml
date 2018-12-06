@@ -36,6 +36,8 @@ let args = Array.sub Sys.argv 1 (Array.length Sys.argv - 1)
 let si = initial_state @@ Array.to_list @@ Array.map Z.of_string args
 
 let () =
+	Random.self_init ();
+
 	Printf.printf("---------------------\n");
 	Printf.printf("    INITIAL STATE    \n");
 	Printf.printf("---------------------\n");
