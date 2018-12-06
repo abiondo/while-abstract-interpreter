@@ -1,4 +1,4 @@
-%token <int> NUM
+%token <Z.t> NUM
 %token <string> IDENT
 
 %token TRUE FALSE

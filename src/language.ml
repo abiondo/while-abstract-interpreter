@@ -1,7 +1,7 @@
 (* The name of a variable *)
 type var = string
 (* The value of a variable *)
-type value = int
+type value = Z.t
 
 (* An arithmetic expression *)
 type a_expr =

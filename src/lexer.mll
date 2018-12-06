@@ -61,7 +61,7 @@ rule token = parse
   | '('          { LPAREN }
   | ')'          { RPAREN }
   | ';'          { SEMI }
-  | num   as lxm { NUM(int_of_string lxm) }
+  | num   as lxm { NUM(Z.of_string lxm) }
   | ident as lxm { IDENT(lxm) }
   | eof          { EOF }
   | _            { raise @@ SyntaxError ("Unexpected character: " ^ (lexeme lexbuf))}

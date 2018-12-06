@@ -28,12 +28,12 @@ let rec initial_state (a : L.value list) : S.state =
 
 (* Prints a state to the standard output *)
 let dump_state s =
-	S.State.iter (fun k v -> Printf.printf "%6s -> %d\n" k v) s
+	S.State.iter (fun k v -> Printf.printf "%6s -> %s\n" k (Z.to_string v)) s
 
 
 let program = parse stdin
 let args = Array.sub Sys.argv 1 (Array.length Sys.argv - 1)
-let si = initial_state @@ Array.to_list @@ Array.map int_of_string args
+let si = initial_state @@ Array.to_list @@ Array.map Z.of_string args
 
 let () =
 	Printf.printf("---------------------\n");

@@ -27,9 +27,9 @@ let rec eval_a_expr (a : L.a_expr) (s : state) : L.value =
 	match a with
 	| Num (n)      -> n
 	| Var (x)      -> State.eval_var x s
-	| Sum (a1, a2) -> (eval_a_expr a1 s) + (eval_a_expr a2 s)
-	| Sub (a1, a2) -> (eval_a_expr a1 s) - (eval_a_expr a2 s)
-	| Mul (a1, a2) -> (eval_a_expr a1 s) * (eval_a_expr a2 s)
+	| Sum (a1, a2) -> Z.add (eval_a_expr a1 s) (eval_a_expr a2 s)
+	| Sub (a1, a2) -> Z.sub (eval_a_expr a1 s) (eval_a_expr a2 s)
+	| Mul (a1, a2) -> Z.mul (eval_a_expr a1 s) (eval_a_expr a2 s)
 
 (* Evaluates a boolean expression *)
 let rec eval_b_expr (b : L.b_expr) (s : state) : bool =
@@ -64,6 +64,6 @@ let rec semantic (st : L.stm) (s : state) : state =
 	| Repeat (b, st1)         -> Ccpo.fix (repeat_aux (eval_b_expr b) (semantic st1)) s
 	| For    (x, a1, a2, st1) -> let b = eval_b_expr @@ L.Le(L.Var(x), a2) in
 	                             let init = semantic @@ L.Assign(x, a1) in
-	                             let inc = semantic @@ L.Assign(x, L.Sum(L.Var(x), L.Num(1))) in
+	                             let inc = semantic @@ L.Assign(x, L.Sum(L.Var(x), L.Num(Z.one))) in
 	                             let body s0 = inc (semantic st1 s0) in
 	                             Ccpo.fix (while_aux b body) @@ init @@ s
