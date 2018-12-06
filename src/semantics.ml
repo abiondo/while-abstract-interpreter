@@ -17,9 +17,9 @@ end
 type state = L.value State.t
 
 (* Type for total semantic functions *)
-type sem_func = state -> state
+type sem = state -> state
 (* Type for partial semantic functions *)
-type sem_func_partial = state -> state option
+type sem_partial = state -> state option
 
 (* Identity partial semantic function *)
 let id (s : state) : state option = Some (s)
@@ -48,7 +48,7 @@ let rec eval_b_expr (b : L.b_expr) (s : state) : bool =
 	| Gt   (a1, a2) -> (eval_a_expr a1 s) > (eval_a_expr a2 s)
 
 (* Composition of partial semantic functions *)
-let (%.) (f : sem_func_partial) (g : sem_func_partial) (s : state) : state option =
+let (%.) (f : sem_partial) (g : sem_partial) (s : state) : state option =
 	match g s with
 	| None      -> None
 	| Some (ss) -> f ss
@@ -61,11 +61,11 @@ let cond (b : 'a -> bool) (f1 : 'a -> 'b) (f2 : 'a -> 'b) (x : 'a) : 'b =
 let partial (f : 'a -> 'b) (x : 'a): 'b option = Some (f x)
 
 (* Auxiliary function whose fixpoint is the while semantic function *)
-let while_aux (b : state -> bool) (sm : sem_func) (g : sem_func_partial) : sem_func_partial =
+let while_aux (b : state -> bool) (sm : sem) (g : sem_partial) : sem_partial =
 	cond b (g %. partial sm) id
 
 (* Auxiliary function whose fixpoint is the repeat-until semantic function *)
-let repeat_aux (b : state -> bool) (sm : sem_func) (g : sem_func_partial) : sem_func_partial =
+let repeat_aux (b : state -> bool) (sm : sem) (g : sem_partial) : sem_partial =
 	cond b id g %. partial sm
 
 (* Semantic function for a statement *)
