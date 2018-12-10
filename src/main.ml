@@ -1,5 +1,7 @@
 module L = Language
 module S = Semantics
+module VF = VariableFinder
+open Utils
 
 (* Parses a program *)
 let parse (c : in_channel) : L.stm =
@@ -18,13 +20,22 @@ let parse (c : in_channel) : L.stm =
 			exit 1
 		end
 
-(* Builds the initial state given a list of arguments *)
-let rec initial_state (a : L.value list) : S.state =
+(* Builds a state with initialized variables for the given arguments *)
+let rec argument_state (a : L.value list) : S.state =
 	let rec build n l =
 		match l with
 		| [] -> S.State.empty
 		| x :: xs -> S.State.add ("$" ^ (string_of_int n)) x (build (n+1) xs)
 	in build 0 a
+
+(* Fills in missing state variables with random values *)
+let fill_state (vars : VF.VarSet.t) (s : S.state) : S.state =
+	let f x s0 = if S.State.mem x s0 then s0 else S.State.add x (random_z ()) s0 in
+	VF.VarSet.fold f vars s
+
+(* Builds the initial state, given a program and a list of arguments *)
+let initial_state (program : L.stm) (a : L.value list) : S.state =
+	fill_state (VF.variables program) (argument_state a)
 
 (* Prints a state to the standard output *)
 let dump_state s =
@@ -33,7 +44,7 @@ let dump_state s =
 
 let program = parse stdin
 let args = Array.sub Sys.argv 1 (Array.length Sys.argv - 1)
-let si = initial_state @@ Array.to_list @@ Array.map Z.of_string args
+let si = initial_state program @@ Array.to_list @@ Array.map Z.of_string args
 
 let () =
 	Random.self_init ();
