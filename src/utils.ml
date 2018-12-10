@@ -19,3 +19,6 @@ let random_z () : Z.t =
 	Z.of_int64 @@ Int64.sub
 		(Random.int64 Int64.max_int)
 		(Int64.div Int64.max_int @@ Int64.of_int 2)
+
+(* Initialize PRNG *)
+let () = Random.self_init ()

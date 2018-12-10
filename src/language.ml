@@ -67,7 +67,7 @@ let rec fold_b_expr (f_a : ('a, a_expr) fold_func) (f_b : ('a, b_expr) fold_func
 	| Lt   (a1, a2)
 	| Gt   (a1, a2) -> g_a (g_a new_acc a1) a2
 
-(* Folds stm through f_st, and f_a and f_b when a_expr and b_expr is encountered *)
+(* Folds stm through f_st, and f_a and f_b when a_expr and b_expr are encountered *)
 let rec fold_stm (f_a : ('a, a_expr) fold_func) (f_b : ('a, b_expr) fold_func)
                  (f_st : ('a, stm) fold_func) (acc : 'a) (st : stm) : 'a =
 	let new_acc = f_st acc st in
