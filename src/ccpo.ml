@@ -17,10 +17,10 @@ let bottom x = None
 (* Least upper bound of a sequence of elements *)
 let rec lub (fs : ('a, 'b) seq) (x : 'a) : 'b =
 	match fs with
-	| Cons (f, fst) ->
+	| Cons (f, tail) ->
 		match f x with
 		| Some (y) -> y
-		| None     -> lub (fst ()) x
+		| None     -> lub (tail ()) x
 
 (* Stream of powers of a total D->D function *)
 let rec func_powers f x =
