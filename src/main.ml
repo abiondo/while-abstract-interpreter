@@ -20,12 +20,17 @@ let parse (c : in_channel) : L.stm =
 			exit 1
 		end
 
+(* Regular expression for var=value arguments *)
+let kv_arg_regex = Re.Posix.compile_pat "([a-zA-Z][a-zA-Z0-9]*)=(0|-?[1-9][0-9]*)"
+
 (* Builds a state with initialized variables for the given arguments *)
-let rec argument_state (a : L.value list) : S.state =
+let rec argument_state (a : string list) : S.state =
 	let rec build n l =
 		match l with
 		| [] -> S.State.empty
-		| x :: xs -> S.State.add ("$" ^ (string_of_int n)) x (build (n+1) xs)
+		| x :: xs -> match Re.exec_opt kv_arg_regex x with
+			| None      -> S.State.add ("$" ^ (string_of_int n)) (Z.of_string x) (build (n+1) xs)
+			| Some (ms) -> S.State.add (Re.get ms 1) (Z.of_string @@ Re.get ms 2) (build (n+1) xs)
 	in build 0 a
 
 (* Fills in missing state variables with random values *)
@@ -34,17 +39,16 @@ let fill_state (vars : VF.VarSet.t) (s : S.state) : S.state =
 	VF.VarSet.fold f vars s
 
 (* Builds the initial state, given a program and a list of arguments *)
-let initial_state (program : L.stm) (a : L.value list) : S.state =
+let initial_state (program : L.stm) (a : string list) : S.state =
 	fill_state (VF.variables program) (argument_state a)
 
 (* Prints a state to the standard output *)
 let dump_state s =
 	S.State.iter (fun k v -> Printf.printf "%6s -> %s\n" k (Z.to_string v)) s
 
-
 let program = parse stdin
 let args = Array.sub Sys.argv 1 (Array.length Sys.argv - 1)
-let si = initial_state program @@ Array.to_list @@ Array.map Z.of_string args
+let si = initial_state program @@ Array.to_list args
 
 let () =
 	Printf.printf("---------------------\n");
