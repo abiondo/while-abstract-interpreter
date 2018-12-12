@@ -30,7 +30,7 @@ let rec argument_state (a : string list) : S.state =
 		| [] -> S.State.empty
 		| x :: xs -> match Re.exec_opt kv_arg_regex x with
 			| None      -> S.State.add ("$" ^ (string_of_int n)) (Z.of_string x) (build (n+1) xs)
-			| Some (ms) -> S.State.add (Re.get ms 1) (Z.of_string @@ Re.get ms 2) (build (n+1) xs)
+			| Some (ms) -> S.State.add (Re.get ms 1) (Z.of_string @@ Re.get ms 2) (build n xs)
 	in build 0 a
 
 (* Fills in missing state variables with random values *)
