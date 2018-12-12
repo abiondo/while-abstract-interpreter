@@ -24,6 +24,7 @@ type sem_partial = state -> state option
 
 (* Evaluates an arithmetic expression *)
 let rec eval_a_expr (a : L.a_expr) (s : state) : L.value =
+	(* Table 1.1 *)
 	match a with
 	| Num (n)      -> n
 	| Var (x)      -> State.eval_var x s
@@ -33,6 +34,7 @@ let rec eval_a_expr (a : L.a_expr) (s : state) : L.value =
 
 (* Evaluates a boolean expression *)
 let rec eval_b_expr (b : L.b_expr) (s : state) : bool =
+	(* Table 1.2 (extended) *)
 	match b with
 	| Bool (b1)     -> b1
 	| Not  (b1)     -> not (eval_b_expr b1 s)
@@ -55,6 +57,7 @@ let repeat_aux (b : state -> bool) (sm : sem) (g : sem_partial) : sem_partial =
 
 (* Semantic function for a statement *)
 let rec semantic (st : L.stm) (s : state) : state =
+	(* Table 4.1 (extended) *)
 	match st with
 	| Skip                    -> s
 	| Assign (x, a)           -> State.add x (eval_a_expr a s) s

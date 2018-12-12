@@ -16,6 +16,8 @@ let bottom x = None
 
 (* Least upper bound of a sequence of elements *)
 let rec lub (fs : ('a, 'b) seq) (x : 'a) : 'b =
+	(* Lemma 4.25: graph of lub = union of graphs of elements,
+	 * i.e., lub fs x = y iff f x = y for some f in fs. *)
 	match fs with
 	| Cons (f, tail) ->
 		match f x with
@@ -26,6 +28,8 @@ let rec lub (fs : ('a, 'b) seq) (x : 'a) : 'b =
 let rec func_powers f x =
 	Cons (x, fun () -> func_powers f (f x))
 
-(* Kleene-Knaster-Tarski fixed point for a continuous D->D function *)
+(* Least fixed point of a continuous D->D function *)
 let fix (f : ('a, 'b) elm -> ('a, 'b) elm) (x : 'a) : 'b =
+	(* Theorem 4.37: Kleene-Knaster-Tarski fixpoint iteration,
+	 * i.e., fix f = lub {f^n bottom | n in N} *)
 	lub (func_powers f bottom) x
