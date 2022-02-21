@@ -1,3 +1,8 @@
 true: package(zarith)
 true: package(re)
 true: bin_annot
+
+"src": include
+"src/analysis": include
+"src/language": include
+"src/util": include
