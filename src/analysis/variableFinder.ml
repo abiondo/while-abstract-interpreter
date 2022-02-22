@@ -19,9 +19,8 @@ let collect_b_expr (vars : VarSet.t) (a : L.b_expr) : VarSet.t =
 (* Collects variables from L.stm *)
 let collect_stm (vars : VarSet.t) (st : L.stm) : VarSet.t =
 	match st with
-	| Assign (x, _)
-	| For    (x, _, _, _) -> VarSet.add x vars
-	| _                   -> vars
+	| Assign (x, _) -> VarSet.add x vars
+	| _             -> vars
 
 (* Returns all the variables defined or used in st *)
 let variables (st : L.stm) : VarSet.t =

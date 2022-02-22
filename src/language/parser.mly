@@ -36,13 +36,13 @@ b_expr:
   | FALSE                { Language.Bool(false) }
   | NOT b_expr           { Language.Not($2) }
   | b_expr AND b_expr    { Language.And($1, $3) }
-  | b_expr OR b_expr     { Language.Or($1, $3) }
+  | b_expr OR b_expr     { LanguageSugar.sOr $1 $3 }
   | a_expr EQ a_expr     { Language.Eq($1, $3) }
-  | a_expr NE a_expr     { Language.Ne($1, $3) }
+  | a_expr NE a_expr     { LanguageSugar.sNe $1 $3 }
   | a_expr LE a_expr     { Language.Le($1, $3) }
-  | a_expr GE a_expr     { Language.Ge($1, $3) }
-  | a_expr LT a_expr     { Language.Lt($1, $3) }
-  | a_expr GT a_expr     { Language.Gt($1, $3) }
+  | a_expr GE a_expr     { LanguageSugar.sGe $1 $3 }
+  | a_expr LT a_expr     { LanguageSugar.sLt $1 $3 }
+  | a_expr GT a_expr     { LanguageSugar.sGt $1 $3 }
   | LPAREN b_expr RPAREN { $2 }
   ;
 
@@ -51,9 +51,9 @@ stm:
   | IDENT ASSIGN a_expr SEMI     { Language.Assign($1, $3) }
   | IF b_expr THEN stm ELSE stm  { Language.If($2, $4, $6) }
   | WHILE b_expr DO stm          { Language.While($2, $4) }
-  | REPEAT stm UNTIL b_expr SEMI { Language.Repeat($4, $2) }
+  | REPEAT stm UNTIL b_expr SEMI { LanguageSugar.sRepeat $4 $2 }
   | FOR IDENT ASSIGN a_expr
-    TO a_expr DO stm             { Language.For($2, $4, $6, $8) }
+    TO a_expr DO stm             { LanguageSugar.sFor $2 $4 $6 $8 }
   | LPAREN stm_list RPAREN       { $2 }
   ;
 
