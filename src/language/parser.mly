@@ -34,13 +34,13 @@ a_expr:
 b_expr:
     TRUE                 { Language.Bool(true) }
   | FALSE                { Language.Bool(false) }
-  | NOT b_expr           { Language.Not($2) }
+  | NOT b_expr           { LanguageSugar.sNot($2) }
   | b_expr AND b_expr    { Language.And($1, $3) }
-  | b_expr OR b_expr     { LanguageSugar.sOr $1 $3 }
+  | b_expr OR b_expr     { Language.Or($1, $3) }
   | a_expr EQ a_expr     { Language.Eq($1, $3) }
-  | a_expr NE a_expr     { LanguageSugar.sNe $1 $3 }
+  | a_expr NE a_expr     { Language.Ne($1, $3) }
   | a_expr LE a_expr     { Language.Le($1, $3) }
-  | a_expr GE a_expr     { LanguageSugar.sGe $1 $3 }
+  | a_expr GE a_expr     { Language.Ge($1, $3) }
   | a_expr LT a_expr     { LanguageSugar.sLt $1 $3 }
   | a_expr GT a_expr     { LanguageSugar.sGt $1 $3 }
   | LPAREN b_expr RPAREN { $2 }

@@ -14,10 +14,12 @@ type a_expr =
 (* A boolean expression *)
 type b_expr =
 	| Bool of bool
-	| Not  of b_expr
 	| And  of b_expr * b_expr
+	| Or   of b_expr * b_expr
 	| Eq   of a_expr * a_expr
+	| Ne   of a_expr * a_expr
 	| Le   of a_expr * a_expr
+	| Ge   of a_expr * a_expr
 
 (* A statement *)
 type stm =
@@ -50,10 +52,12 @@ let rec fold_b_expr (f_a : ('a, a_expr) fold_func) (f_b : ('a, b_expr) fold_func
 	let g_b = fold_b_expr f_a f_b in
 	match b with
 	| Bool (_)      -> new_acc
-	| Not  (b1)     -> g_b new_acc b1
-	| And  (b1, b2) -> g_b (g_b new_acc b1) b2
+	| And  (b1, b2)
+	| Or   (b1, b2) -> g_b (g_b new_acc b1) b2
 	| Eq   (a1, a2)
-	| Le   (a1, a2) -> g_a (g_a new_acc a1) a2
+	| Ne   (a1, a2)
+	| Le   (a1, a2)
+	| Ge   (a1, a2) -> g_a (g_a new_acc a1) a2
 
 (* Folds stm through f_st, and f_a and f_b when a_expr and b_expr are encountered *)
 let rec fold_stm (f_a : ('a, a_expr) fold_func) (f_b : ('a, b_expr) fold_func)

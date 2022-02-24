@@ -1,19 +1,20 @@
 module L = Language
 
-let sOr (b1 : L.b_expr) (b2 : L.b_expr) : L.b_expr =
-    L.Not(L.And(L.Not(b1), L.Not(b2)))
-
-let sNe (a1 : L.a_expr) (a2 : L.a_expr) : L.b_expr =
-    L.Not(L.Eq(a1, a2))
-
 let sLt (a1 : L.a_expr) (a2 : L.a_expr) : L.b_expr =
-    L.And(L.Le(a1, a2), (sNe a1 a2))
+    L.And(L.Le(a1, a2), L.Ne(a1, a2))
 
 let sGt (a1 : L.a_expr) (a2 : L.a_expr) : L.b_expr =
-    L.Not(L.Le(a1, a2))
+    L.And(L.Ge(a1, a2), L.Ne(a1, a2))
 
-let sGe (a1 : L.a_expr) (a2 : L.a_expr) : L.b_expr =
-    sOr (sGt a1 a2) (L.Eq(a1, a2))
+let rec sNot (b : L.b_expr) : L.b_expr =
+    match b with
+    | L.Bool (v) -> L.Bool(not v)
+    | L.And (b1, b2) -> L.Or(sNot b1, sNot b2)
+    | L.Or (b1, b2) -> L.And(sNot b1, sNot b2)
+    | L.Eq (a1, a2) -> L.Ne(a1, a2)
+    | L.Ne (a1, a2) -> L.Eq(a1, a2)
+    | L.Le (a1, a2) -> sGt a1 a2
+    | L.Ge (a1, a2) -> sLt a1 a2
 
 let sRepeat (b : L.b_expr) (st : L.stm) : L.stm =
     L.Comp(st, L.While(b, st))
