@@ -20,6 +20,8 @@ type b_expr =
 	| Ne   of a_expr * a_expr
 	| Le   of a_expr * a_expr
 	| Ge   of a_expr * a_expr
+	| Lt   of a_expr * a_expr
+	| Gt   of a_expr * a_expr
 
 (* A statement *)
 type stm =

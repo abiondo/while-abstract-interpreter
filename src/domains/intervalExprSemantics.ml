@@ -47,3 +47,5 @@ let rec abstract_b_expr (b : Language.b_expr) (s : state) : state =
                        StateLat.State.set x (Interval(a1, ZInf.min b1 b2)) s
         | _ -> s)
     | Ge (e1, e2) -> abstract_b_expr (Le(e2, e1)) s
+    | Lt (e1, e2) -> s (* TODO *)
+    | Gt (e1, e2) -> s (* TODO *)

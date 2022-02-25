@@ -41,8 +41,8 @@ b_expr:
   | a_expr NE a_expr     { Language.Ne($1, $3) }
   | a_expr LE a_expr     { Language.Le($1, $3) }
   | a_expr GE a_expr     { Language.Ge($1, $3) }
-  | a_expr LT a_expr     { LanguageSugar.sLt $1 $3 }
-  | a_expr GT a_expr     { LanguageSugar.sGt $1 $3 }
+  | a_expr LT a_expr     { Language.Lt($1, $3) }
+  | a_expr GT a_expr     { Language.Gt($1, $3) }
   | LPAREN b_expr RPAREN { $2 }
   ;
 
