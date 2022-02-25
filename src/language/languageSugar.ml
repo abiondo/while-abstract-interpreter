@@ -2,24 +2,24 @@ module L = Language
 
 let rec sNot (b : L.b_expr) : L.b_expr =
     match b with
-    | L.Bool (v) -> L.Bool(not v)
-    | L.And (b1, b2) -> L.Or(sNot b1, sNot b2)
-    | L.Or (b1, b2) -> L.And(sNot b1, sNot b2)
-    | L.Eq (a1, a2) -> L.Ne(a1, a2)
-    | L.Ne (a1, a2) -> L.Eq(a1, a2)
-    | L.Le (a1, a2) -> L.Gt(a1, a2)
-    | L.Ge (a1, a2) -> L.Lt(a1, a2)
-    | L.Lt (a1, a2) -> L.Ge(a1, a2)
-    | L.Gt (a1, a2) -> L.Le(a1, a2)
+    | Bool (v)     -> Bool(not v)
+    | And (b1, b2) -> Or(sNot b1, sNot b2)
+    | Or (b1, b2)  -> And(sNot b1, sNot b2)
+    | Eq (a1, a2)  -> Ne(a1, a2)
+    | Ne (a1, a2)  -> Eq(a1, a2)
+    | Le (a1, a2)  -> Gt(a1, a2)
+    | Ge (a1, a2)  -> Lt(a1, a2)
+    | Lt (a1, a2)  -> Ge(a1, a2)
+    | Gt (a1, a2)  -> Le(a1, a2)
 
 let sRepeat (b : L.b_expr) (st : L.stm) : L.stm =
-    L.Comp(st, L.While(b, st))
+    Comp(st, While(b, st))
 
 let sFor (x : L.var) (a1 : L.a_expr) (a2 : L.a_expr) (st : L.stm) : L.stm =
-    L.Comp(
-        L.Assign(x, a1),
-        L.While(L.Le(L.Var(x), a2), L.Comp(
+    Comp(
+        Assign(x, a1),
+        While(Le(Var(x), a2), Comp(
             st,
-            L.Assign(x, L.Sum(L.Var(x), L.Num(Z.one)))
+            Assign(x, Sum(Var(x), Num(Z.one)))
         ))
     )
