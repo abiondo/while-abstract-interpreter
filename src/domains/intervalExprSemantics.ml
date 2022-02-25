@@ -40,10 +40,10 @@ let rec abstract_b_expr (b : Language.b_expr) (s : state) : state =
     | Ne (e1, e2) -> s (* TODO *)
     | Le (e1, e2) -> rel e1 e2 (fun a1 b1 a2 b2 ->
         match e1, e2 with
-        | Var(x), Var(y) -> if a1 > b2 then StateLat.bot else
+        | Var(x), Var(y) -> if ZInf.(a1 > b2) then StateLat.bot else
                             StateLat.State.set x (Interval(a1, ZInf.min b1 b2))
                             (StateLat.State.set y (Interval(ZInf.max a1 a2, b2)) s)
-        | Var(x), _ -> if a1 > b2 then StateLat.bot else
+        | Var(x), _ -> if ZInf.(a1 > b2) then StateLat.bot else
                        StateLat.State.set x (Interval(a1, ZInf.min b1 b2)) s
         | _ -> s)
     | Ge (e1, e2) -> abstract_b_expr (Le(e2, e1)) s

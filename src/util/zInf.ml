@@ -19,8 +19,14 @@ let max a b =
     | Num(na), Num(nb) -> if Z.(na > nb) then a else b
 
 let compare a b =
-    if a = b then 0 else
-    if min a b = a then -1
+    let eq x y =
+        match x, y with
+        | NegInf, NegInf | PosInf, PosInf -> true
+        | NegInf, _ | _, NegInf | PosInf, _ | _, PosInf -> false
+        | Num(nx), Num (ny) -> Z.(nx = ny)
+    in
+    if eq a b then 0 else
+    if eq (min a b) a then -1
     else 1
 
 let add a b =
@@ -51,11 +57,9 @@ let (+) = add
 let (-) = sub
 let ( * ) = mul
 
-module Compare = struct
-    let (=) a b = compare a b = 0
-    let (<) a b = compare a b < 0
-    let (>) a b = compare a b > 0
-    let (<=) a b = compare a b <= 0
-    let (>=) a b = compare a b >= 0
-    let (<>) a b = compare a b != 0
-end
+let (=) a b = compare a b = 0
+let (<) a b = compare a b < 0
+let (>) a b = compare a b > 0
+let (<=) a b = compare a b <= 0
+let (>=) a b = compare a b >= 0
+let (<>) a b = compare a b <> 0
