@@ -37,15 +37,24 @@ let rec abstract_b_expr (b : Language.b_expr) (s : state) : state =
     | And (b1, b2) -> StateLat.glb (abstract_b_expr b1 s) (abstract_b_expr b2 s)
     | Or (b1, b2) -> StateLat.lub (abstract_b_expr b1 s) (abstract_b_expr b2 s)
     | Eq (e1, e2) -> abstract_b_expr (And(Le(e1, e2), Le(e2, e1))) s
-    | Ne (e1, e2) -> s (* TODO *)
+    | Ne (e1, e2) -> abstract_b_expr (Or(Lt(e1, e2), Lt(e2, e1))) s
     | Le (e1, e2) -> rel e1 e2 (fun a1 b1 a2 b2 ->
+        if ZInf.(a1 > b2) then StateLat.bot else
         match e1, e2 with
-        | Var(x), Var(y) -> if ZInf.(a1 > b2) then StateLat.bot else
-                            StateLat.State.set x (Interval(a1, ZInf.min b1 b2))
-                            (StateLat.State.set y (Interval(ZInf.max a1 a2, b2)) s)
-        | Var(x), _ -> if ZInf.(a1 > b2) then StateLat.bot else
-                       StateLat.State.set x (Interval(a1, ZInf.min b1 b2)) s
+        | Var(x), Var(y) ->
+            StateLat.State.set x ZInf.(Interval(a1, min b1 b2))
+            (StateLat.State.set y ZInf.(Interval(max a1 a2, b2)) s)
+        | Var(x), _ -> StateLat.State.set x ZInf.(Interval(a1, min b1 b2)) s
+        | _, Var(x) -> StateLat.State.set x ZInf.(Interval(max a1 a2, b2)) s
         | _ -> s)
     | Ge (e1, e2) -> abstract_b_expr (Le(e2, e1)) s
-    | Lt (e1, e2) -> s (* TODO *)
-    | Gt (e1, e2) -> s (* TODO *)
+    | Lt (e1, e2) -> rel e1 e2 (fun a1 b1 a2 b2 ->
+        if ZInf.(a1 >= b2) then StateLat.bot else
+        match e1, e2 with
+        | Var(x), Var(y) ->
+            StateLat.State.set x ZInf.(Interval(a1, min b1 (b2 - one)))
+            (StateLat.State.set y ZInf.(Interval(max (a1 + one) a2, b2)) s)
+        | Var(x), _ -> StateLat.State.set x ZInf.(Interval(a1, min b1 (b2 - one))) s
+        | _, Var(x) -> StateLat.State.set x ZInf.(Interval(max (a1 + one) a2, b2)) s
+        | _ -> s)
+    | Gt (e1, e2) -> abstract_b_expr (Lt(e2, e1)) s
