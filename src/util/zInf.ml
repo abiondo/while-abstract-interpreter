@@ -19,8 +19,8 @@ let max a b =
     | Num(na), Num(nb) -> if Z.(na > nb) then a else b
 
 let compare a b =
-    if min a b = a then
-        if a = b then 0 else -1
+    if a = b then 0 else
+    if min a b = a then -1
     else 1
 
 let add a b =
