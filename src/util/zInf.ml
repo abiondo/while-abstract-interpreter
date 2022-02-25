@@ -1,5 +1,8 @@
 type t = NegInf | Num of Z.t | PosInf
 
+let zero = Num(Z.zero)
+let one = Num(Z.one)
+
 let to_string a =
     match a with
     | NegInf -> "-inf"
@@ -45,8 +48,8 @@ let sub a b =
 
 let mul (a : t) (b : t) : t =
     match a, b with
-    | Num(n), _ when n = Z.zero -> Num(Z.zero)
-    | _, Num(n) when n = Z.zero -> Num(Z.zero)
+    | Num(n), _ when n = Z.zero -> zero
+    | _, Num(n) when n = Z.zero -> zero
     | NegInf, PosInf | PosInf, NegInf -> NegInf
     | NegInf, NegInf | PosInf, PosInf -> PosInf
     | NegInf, Num(n) | Num(n), NegInf -> if Z.(n > zero) then NegInf else PosInf
