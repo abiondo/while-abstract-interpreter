@@ -4,5 +4,6 @@ true: bin_annot
 
 "src": include
 "src/analysis": include
+"src/domains": include
 "src/language": include
 "src/util": include
