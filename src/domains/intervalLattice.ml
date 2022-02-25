@@ -22,6 +22,14 @@ let glb (v1 : t) (v2 : t) : t =
         let b' = ZInf.min b1 b2 in
         if ZInf.(a' <= b') then Interval(a', b') else bot
 
+let widen (v1 : t) (v2 : t) : t =
+    match v1, v2 with
+    | Bot, v | v, Bot -> v
+    | Interval(a1, b1), Interval(a2, b2) -> Interval(
+        (if ZInf.(a1 <= a2) then a1 else NegInf),
+        (if ZInf.(b1 >= b2) then b1 else PosInf)
+    )
+
 let to_string (v : t) : string =
     match v with
     | Bot -> "bot"

@@ -5,6 +5,7 @@ module type Lattice = sig
     val lte : t -> t -> bool
     val lub : t -> t -> t
     val glb : t -> t -> t
+    val widen : t -> t -> t
     val to_string : t -> string
 end
 
@@ -12,7 +13,7 @@ module Fixpoint (L : Lattice) = struct
     let lfp (f : L.t -> L.t) : L.t =
         let rec iter y =
             let y' = f y in
-            if L.lte y' y then y else iter y'
+            if L.lte y' y then y else iter (L.widen y y')
         in iter L.bot
 end
 

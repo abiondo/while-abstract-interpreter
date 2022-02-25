@@ -40,6 +40,14 @@ module Make (ValueLat : Domains.Lattice) = struct
             let update x s = State.set x (vglb x) s in
             VarSet.fold update (vars [m1; m2]) top
 
+    let widen (s1 : t) (s2 : t) : t =
+        match s1, s2 with
+        | Bot, s | s, Bot -> s
+        | Elm(m1), Elm(m2) ->
+            let vwiden x = ValueLat.widen (State.get x s1) (State.get x s2) in
+            let update x s = State.set x (vwiden x) s in
+            VarSet.fold update (vars [m1; m2]) top
+
     let to_string (s : t) : string =
         match s with
         | Bot     -> "bot"
