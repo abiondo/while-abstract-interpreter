@@ -34,6 +34,7 @@ let ident = var | arg
 rule token = parse
     white        { token lexbuf }
   | newline      { next_line lexbuf; token lexbuf }
+  | "//"         { comment lexbuf }
   | "true"       { TRUE }
   | "false"      { FALSE }
   | "if"         { IF }
@@ -65,3 +66,7 @@ rule token = parse
   | ident as lxm { IDENT(lxm) }
   | eof          { EOF }
   | _            { raise @@ SyntaxError ("Unexpected character: " ^ (lexeme lexbuf))}
+and comment = parse
+  | newline { next_line lexbuf; token lexbuf }
+  | eof     { EOF }
+  | _       { comment lexbuf }
