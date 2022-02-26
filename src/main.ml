@@ -14,8 +14,8 @@ let parse (c : in_channel) : Language.stm =
 			exit 1
 		end
 
-module Domain : Domains.Domain = IntervalDomain
+module Domain : Domains.StateDomain = IntervalDomain
 
 let program = parse stdin
-let final_state = Domain.StmSem.abstract_stm program Domain.StateLat.top
-let () = Printf.printf "%s\n" (Domain.StateLat.to_string final_state)
+let final_state = Domain.abstract_stm program Domain.top
+let () = Printf.printf "%s\n" (Domain.to_string final_state)

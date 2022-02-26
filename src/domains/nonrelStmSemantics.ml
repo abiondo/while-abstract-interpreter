@@ -1,7 +1,7 @@
 module Make
     (ValueLat : Domains.Lattice)
     (ExprSem : Domains.ExprSemantics
-        with type state = NonrelStateLattice.Make(ValueLat).t 
+        with type state = NonrelStateLattice.Make(ValueLat).t
         and type value = ValueLat.t)
 = struct
     module StateLat = NonrelStateLattice.Make(ValueLat)

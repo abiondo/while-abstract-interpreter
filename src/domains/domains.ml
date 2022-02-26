@@ -29,7 +29,7 @@ module type ExprSemantics = sig
     val abstract_b_expr: Language.b_expr -> state -> state
 end
 
-module type Domain = sig
-    module StateLat : Lattice
-    module StmSem : StmSemantics with type state = StateLat.t
+module type StateDomain = sig
+    include Lattice
+    include StmSemantics with type state = t
 end
