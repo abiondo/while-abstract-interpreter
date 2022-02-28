@@ -9,6 +9,12 @@ let to_string a =
     | PosInf -> "+inf"
     | Num (n) -> Z.to_string n
 
+let of_string s =
+    match String.trim s with
+    | "-inf" -> NegInf
+    | "+inf" -> PosInf
+    | ns     -> Num(Z.of_string ns)
+
 let min a b =
     match a, b with
     | NegInf, _ | _, NegInf -> NegInf

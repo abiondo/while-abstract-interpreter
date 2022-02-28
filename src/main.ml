@@ -16,6 +16,12 @@ let parse (c : in_channel) : Language.stm =
 
 module Domain : Domains.StateDomain = IntervalDomain
 
+let initial_state =
+	if Array.length Sys.argv < 2 then Domain.top
+	else Domain.of_string Sys.argv.(1)
+
 let program = parse stdin
-let final_state = Domain.abstract_stm program Domain.top
+
+let final_state = Domain.abstract_stm program initial_state
+
 let () = Printf.printf "%s\n" (Domain.to_string final_state)

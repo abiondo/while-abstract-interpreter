@@ -35,3 +35,20 @@ let to_string (v : t) : string =
     | Bot -> "bot"
     | Interval (a, b) ->
         "[" ^ (ZInf.to_string a) ^ ", " ^ (ZInf.to_string b) ^ "]"
+
+let of_string (s : string) : t =
+    let st = String.trim s in
+    if st = "bot" then bot else
+    let len = String.length s in
+    if not (st.[0] = '[' && st.[len - 1] = ']') then
+        failwith "Invalid interval syntax ([])" else
+    let si = String.sub st 1 (len - 2) in
+    let ns = List.map String.trim (String.split_on_char ',' si) in
+    if List.length ns != 2 then failwith "Invalid interval syntax (,)" else
+    let a = ZInf.of_string (List.nth ns 0) in
+    let b = ZInf.of_string (List.nth ns 1) in
+    match a, b with
+    | _, NegInf -> failwith "Invalid interval bounds (upper -inf)"
+    | PosInf, _ -> failwith "Invalid interval bounds (lower +inf)"
+    | _ -> if ZInf.(a > b) then failwith "Invalid interval bounds (a > b)"
+           else Interval(a, b)

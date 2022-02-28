@@ -7,6 +7,7 @@ module type Lattice = sig
     val glb : t -> t -> t
     val widen : t -> t -> t
     val to_string : t -> string
+    val of_string : string -> t
 end
 
 module Fixpoint (L : Lattice) = struct

@@ -53,4 +53,19 @@ module Make (ValueLat : Domains.Lattice) = struct
                      let ss = List.map (fun (k, v) ->
                         k ^ " -> " ^ (ValueLat.to_string v)) bs in
                      "{" ^ (String.concat "; " ss) ^ "}"
+
+    let of_string (s : string) : t =
+        let st = String.trim s in
+        if st = "bot" then bot else
+        let len = String.length s in
+        if not (st.[0] = '{' && st.[len - 1] = '}') then
+            failwith "Invalid state syntax ({})" else
+        if len = 2 then top else
+        let sm = String.sub st 1 (len - 2) in
+        let ms = List.map String.trim (String.split_on_char ';' sm) in
+        List.fold_left (fun acc var ->
+            let ps = List.map String.trim (Str.split (Str.regexp_string "->") var) in
+            if List.length ps != 2 then failwith "Invalid state syntax (->)"
+            else State.set (List.nth ps 0) (ValueLat.of_string (List.nth ps 1)) acc
+        ) top ms
 end

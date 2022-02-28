@@ -1,6 +1,7 @@
 true: package(zarith)
 true: package(re)
 true: bin_annot
+true: use_str
 
 "src": include
 "src/domains": include
